@@ -64,9 +64,17 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
     var skipButtonTopAnchor: NSLayoutConstraint?
     var nextButtonTopAnchor: NSLayoutConstraint?
     
-    
+    func dismissKeyboard(){
+        view.endEditing(true)
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: "dismissKeyboard")
+
+        
+        view.addGestureRecognizer(tap)
         
         observeKeyboardNotifications()
         
@@ -98,18 +106,18 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardHide), name: .UIKeyboardWillHide, object: nil)
     }
     
-    func keyboardHide() {
-        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-            
-            self.view.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
-            
-        }, completion: nil)
-    }
-    
     func keyboardShow() {
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
             
             self.view.frame = CGRect(x: 0, y: -50, width: self.view.frame.width, height: self.view.frame.height)
+            
+        }, completion: nil)
+    }
+    
+    func keyboardHide() {
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+            
+            self.view.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
             
         }, completion: nil)
     }
@@ -157,6 +165,15 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
         
         if indexPath.item == pages.count {
             let loginCell = collectionView.dequeueReusableCell(withReuseIdentifier: loginCellId, for: indexPath)
+            
+            let swipeleft = UISwipeGestureRecognizer(target: self, action: "dismissKeyboard")
+            swipeleft.direction = UISwipeGestureRecognizerDirection.left
+            loginCell.addGestureRecognizer(swipeleft)
+            
+            let swiperight = UISwipeGestureRecognizer(target: self, action: "dismissKeyboard")
+            swiperight.direction = UISwipeGestureRecognizerDirection.right
+            loginCell.addGestureRecognizer(swiperight)
+            
             return loginCell
         }
         
@@ -164,6 +181,9 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
         
         let page = pages[indexPath.item]
         cell.page = page
+        
+        
+
         
         return cell
     }
